@@ -24,7 +24,7 @@ body{
 }
 #main{
     min-height: 100vh;
-    padding-bottom: 50px;
+    padding-top: 50px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
