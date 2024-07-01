@@ -34,10 +34,7 @@ function addNote(){
 
 function saveNotes(noteId){
     const note = document.querySelector(`.note#${noteId}`);
-    const noteContent = `
-    <div class=note id="${noteId}">
-        ${note.innerHTML}
-    </div>`
+    const noteContent = note.innerHTML
     const inputContent = document.querySelector(`.note#${noteId} textarea`).value
     if(inputContent != ''){
         const noteData = {
@@ -55,7 +52,25 @@ function countNotes(){
 
 function loadNote(noteId){
     const noteData = JSON.parse(localStorage.getItem(noteId))
-    main.innerHTML = noteData.noteContent;
+    const container = document.createElement('div')
+    container.classList.add("note")
+    container.id = noteId
+    container.innerHTML = noteData.noteContent;
+    main.appendChild(container)
+    console.log(noteData.noteContent)
     const input = document.querySelector(`.note#${noteId} textarea`);
     input.value = noteData.inputContent;
 }
+
+function loadNotes(){
+    if(localStorage.length != 0){
+        for(i = 1;i<=localStorage.length;i++){
+            let note = `nota-${i}`
+            loadNote(note)
+        }
+    }else{
+        addNote()
+    }
+}
+
+loadNotes();
