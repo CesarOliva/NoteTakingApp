@@ -1,8 +1,40 @@
 const addBtn = document.getElementById('addBtn');
 const main = document.getElementById('main');
+let save = document.querySelectorAll('.save');
+let trash = document.querySelectorAll('.trash');
+
 let numberNotes;
 
 addBtn.addEventListener('click', addNote);
+
+function countNotes(){
+    numberNotes = document.querySelectorAll('.note').length + 1
+}
+
+function saveAndDelete(){
+    save = document.querySelectorAll('.save');
+    trash = document.querySelectorAll('.trash');
+
+    save.forEach(function(element){
+        element.addEventListener('click', function(event){
+            var saveClicked = event.target;
+            var element = saveClicked.parentElement.parentElement;
+            var noteId = element.id;
+            saveNotes(noteId)
+        })
+    })
+
+    trash.forEach(function(element){
+        element.addEventListener('click', function(event){
+            var trashClicked = event.target;
+            var element = trashClicked.parentElement.parentElement;
+            var noteId = element.id;
+            element.remove();
+            localStorage.removeItem(noteId)
+        })
+    })
+
+}
 
 function addNote(){
     countNotes();
@@ -20,16 +52,7 @@ function addNote(){
     `
     main.appendChild(note);
 
-    const save = note.querySelector('.save');
-    save.addEventListener('click', ()=>{
-        saveNotes(noteId)
-    });
-
-    // const trash = note.querySelector('.trash');
-    // trash.addEventListener('click', ()=>{
-    //     note.remove();
-    //     countNotes();
-    // });
+    saveAndDelete();
 }
 
 function saveNotes(noteId){
@@ -46,8 +69,9 @@ function saveNotes(noteId){
     }
 }
 
-function countNotes(){
-    numberNotes = document.querySelectorAll('.note').length + 1
+function deleteNote(note, noteId){
+    note.remove();
+    localStorage.removeItem(noteId)
 }
 
 function loadNote(noteId){
@@ -57,7 +81,6 @@ function loadNote(noteId){
     container.id = noteId
     container.innerHTML = noteData.noteContent;
     main.appendChild(container)
-    console.log(noteData.noteContent)
     const input = document.querySelector(`.note#${noteId} textarea`);
     input.value = noteData.inputContent;
 }
@@ -74,3 +97,14 @@ function loadNotes(){
 }
 
 loadNotes();
+
+save = document.querySelectorAll('.save');
+trash = document.querySelectorAll('.trash');
+
+save.forEach(function(element){
+    element.addEventListener('click', saveAndDelete())
+})
+
+trash.forEach(function(element){
+    element.addEventListener('click', saveAndDelete())
+})
