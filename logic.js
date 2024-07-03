@@ -113,9 +113,20 @@ function loadNote(noteId){
 function loadNotes(){
     //If localStorage isn't empty
     if(localStorage.length != 0){
-        for(i = 1;i<=localStorage.length;i++){
-            let note = `nota-${i}`
-            loadNote(note)
+        //Starts an empty array to save the Id number
+        var ArrayId = []
+        for(i=0;i<localStorage.length;i++){
+            ArrayId[i] = parseInt(localStorage.key(i).replace('nota-',''))
+            //Save the last Id
+            var lastId = ArrayId[i]
+        }
+        //Sorting in case you save the notes unorderly 
+        ArrayId.sort()
+        for(i=1;i<=lastId+1;i++){
+            if(ArrayId.includes(i)){
+                let note = 'nota-'+i
+                loadNote(note)
+            }
         }
     }else{
         //Otherwise charge one note
