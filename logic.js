@@ -117,14 +117,15 @@ function loadNotes(){
         var ArrayId = []
         for(i=0;i<localStorage.length;i++){
             ArrayId[i] = parseInt(localStorage.key(i).replace('nota-',''))
+            //Ordering array 
+            ArrayId.sort((a,b)=>a-b)
             //Save the last Id
             var lastId = ArrayId[i]
         }
-        //Sorting in case you save the notes unorderly 
-        ArrayId.sort()
-        for(i=1;i<=lastId+1;i++){
+        for(i=lastId+1;i>=1;i--){
+        // for(i=1;i<=lastId;i++){
             if(ArrayId.includes(i)){
-                let note = 'nota-'+i
+                let note = 'nota-'+i;
                 loadNote(note)
             }
         }
@@ -150,3 +151,10 @@ function preCharge(){
 }
 
 preCharge();
+
+
+
+///MEJORAS
+/*
+ACOMODAR CONFORME A SE GUARDEN
+*/ 
