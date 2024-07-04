@@ -3,22 +3,23 @@ const addBtn = document.getElementById('addBtn');
 const main = document.getElementById('main');
 let save = document.querySelectorAll('.save');
 let trash = document.querySelectorAll('.trash');
-//Starting the variable which counts the number of Notes on the HTML
-let numberNotes = 0;
+//Variable which saves the number of notes saved on the LocalStorage
+var numberNotes;
 
 //Clicking addNote
 addBtn.addEventListener('click', addNote);
 
+//Count the number of notes
+function countNotes(){
+    numberNotes = localStorage.length;
+}
+
 //Add notes
 function addNote(){
-    //Re-number notes
-    renumberNotes();
-    
-    //Increase the number of notes
-    numberNotes++;
+    countNotes();
     const note = document.createElement('div');
     note.classList.add('note');
-    let noteId =   `nota-${numberNotes}`;
+    const noteId = `nota-${numberNotes+1}`
     note.id = noteId;
     note.innerHTML = `
     <div class="tool">
@@ -34,20 +35,32 @@ function addNote(){
 }
 
 //Save note on LocalStorage
-function saveNote(noteId){
+function saveNote(element){
+    //Getting the id of the element saved
+    var noteId = element.id;
+
+    var arrayNotes = []
+    for(i=0;i<localStorage.length;i++){
+        arrayNotes[i] = localStorage.key(i);
+    }
+    //If the id doesn't exist
+    if(!arrayNotes.includes(noteId)){
+        countNotes();
+        noteId = `nota-${numberNotes+1}`;
+    }
     const note = document.querySelector(`.note#${noteId}`);
-    const noteContent = note.innerHTML
+    const noteContent = note.innerHTML;
     const inputContent = document.querySelector(`.note#${noteId} textarea`).value
-    //Save the note when it's not empty
+    //Save when the note it's not empty
     if(inputContent != ''){
-        //JSON Object to save on Local Storage
+        //JSON Object to save on localStorage
         const noteData = {
             noteId: noteId,
             noteContent: noteContent,
             inputContent: inputContent
         }
         //Saving note on LocalStorage
-        localStorage.setItem(noteId, JSON.stringify(noteData))
+        localStorage.setItem(noteId, JSON.stringify(noteData));
     }
 }
 
@@ -56,7 +69,7 @@ function deleteNote(note, noteId){
     note.remove();
     localStorage.removeItem(noteId);
     //Calls the function to update the number of notes
-    renumberNotes();
+    countNotes();
 }
 
 //Function that reloads the number of notes by using the save and delete elements.
@@ -69,9 +82,8 @@ function saveAndDelete(){
         element.addEventListener('click', function(event){
             var saveClicked = event.target;
             var element = saveClicked.parentElement.parentElement;
-            var noteId = element.id;
-            //Save the note
-            saveNote(noteId)
+            //Save the note and send the element
+            saveNote(element)
         })
     })
 
@@ -84,16 +96,6 @@ function saveAndDelete(){
             //Delete the note
             deleteNote(element, noteId);
         })
-    })
-}
-
-//Renumber notes and change the number of note on Id and LocalStorage
-function renumberNotes(){
-    const notes = document.querySelectorAll('.note');
-    numberNotes=0;
-    notes.forEach(note => {
-        numberNotes++;
-        note.id = `nota-${numberNotes}`;
     })
 }
 
@@ -122,8 +124,7 @@ function loadNotes(){
             //Save the last Id
             var lastId = ArrayId[i]
         }
-        for(i=lastId+1;i>=1;i--){
-        // for(i=1;i<=lastId;i++){
+        for(i=1;i<=lastId;i++){
             if(ArrayId.includes(i)){
                 let note = 'nota-'+i;
                 loadNote(note)
@@ -151,10 +152,3 @@ function preCharge(){
 }
 
 preCharge();
-
-
-
-///MEJORAS
-/*
-ACOMODAR CONFORME A SE GUARDEN
-*/ 
