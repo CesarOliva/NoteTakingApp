@@ -14,8 +14,45 @@ function countNotes(){
     numberNotes = localStorage.length;
 }
 
+//Update the ID from the localStorage and HTML
+function renumberNotes(){
+    //If localStorage isn't empty
+    if(localStorage.length>0){
+        //Gets the notes on the HTML
+        const notes = document.querySelectorAll('.note');
+        const elementsLS = []
+
+        //Fills the elementLS array
+        for(i=0;i<localStorage.length;i++){
+            //Saves the element from the localStorage
+            elementsLS.push(localStorage.key(i))
+        }
+        elementsLS.sort((a,b)=>{
+            a = parseInt(a.split('-')[1])
+            b = parseInt(b.split('-')[1])
+            return a-b;
+        })
+        for(i=0;i<elementsLS.length;i++){
+            if(notes[i].id != `nota-${i+1}`){
+                noteId = notes[i].id;
+                //Getting the element from LocalStorge
+                const noteData = JSON.parse(localStorage.getItem(noteId));
+                //Update the element from the HTML
+                notes[i].id = `nota-${i+1}`;
+                //Change the Id from the note;
+                noteData.noteId = notes[i].id;
+                //Save the note with a new Id
+                localStorage.setItem(noteData.noteId, JSON.stringify(noteData));
+                //Delete the previous note;
+                localStorage.removeItem(noteId)
+            }
+        }
+    }
+}
+
 //Add notes
 function addNote(){
+    //Calls the function to get the number of current notes on the LocalStorage
     countNotes();
     const note = document.createElement('div');
     note.classList.add('note');
@@ -65,11 +102,11 @@ function saveNote(element){
 }
 
 //Delete note on Local Storage and HTML
-function deleteNote(note, noteId){
+function deleteNote(note){
     note.remove();
-    localStorage.removeItem(noteId);
     //Calls the function to update the number of notes
     countNotes();
+    renumberNotes();
 }
 
 //Function that reloads the number of notes by using the save and delete elements.
@@ -92,9 +129,8 @@ function saveAndDelete(){
         element.addEventListener('click', function(event){
             var trashClicked = event.target;
             var element = trashClicked.parentElement.parentElement;
-            var noteId = element.id;
             //Delete the note
-            deleteNote(element, noteId);
+            deleteNote(element);
         })
     })
 }
