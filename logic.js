@@ -8,8 +8,6 @@ var numberNotes;
 
 //Clicking addNote
 addBtn.addEventListener('click', addNote);
-alert(localStorage)
-localStorage.clear();
 //Count the number of notes
 function countNotes(){
     numberNotes = localStorage.length;
