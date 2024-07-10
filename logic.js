@@ -4,70 +4,58 @@ const main = document.getElementById('main');
 let save = document.querySelectorAll('.save');
 let trash = document.querySelectorAll('.trash');
 //Variable which saves the number of notes saved on the LocalStorage
-var numberNotes;
+var numberNotes = localStorage.length;
 
 //Clicking addNote
 addBtn.addEventListener('click', addNote);
+
 //Count the number of notes
 function countNotes(){
     numberNotes = localStorage.length;
 }
 
 //Update the ID from the localStorage and HTML
-function renumberNotes(){
-    //If localStorage isn't empty
-    if(localStorage.length>0){
-        //Gets the notes on the HTML
-        const notes = document.querySelectorAll('.note');
-        const elementsLS = []
-
-        //Fills the elementLS array
-        for(i=0;i<localStorage.length;i++){
-            //Saves the element from the localStorage
-            elementsLS.push(localStorage.key(i))
-        }
-        elementsLS.sort((a,b)=>{
-            a = parseInt(a.split('-')[1])
-            b = parseInt(b.split('-')[1])
-            return a-b;
-        })
-        for(i=0;i<elementsLS.length;i++){
-            if(notes[i].id != `nota-${i+1}`){
-                noteId = notes[i].id;
-                //Getting the element from LocalStorge
-                const noteData = JSON.parse(localStorage.getItem(noteId));
-                //Update the element from the HTML
-                notes[i].id = `nota-${i+1}`;
-                //Change the Id from the note;
-                noteData.noteId = notes[i].id;
-                //Save the note with a new Id
-                localStorage.setItem(noteData.noteId, JSON.stringify(noteData));
-                //Delete the previous note;
-                localStorage.removeItem(noteId)
-            }
+function renumberNotes(notes, elementsLS){
+    for(i=0;i<elementsLS.length;i++){
+        if(notes[i].id != `nota-${i+1}`){
+            let noteId = notes[i].id;
+            //Getting the element from LocalStorge
+            const noteData = JSON.parse(localStorage.getItem(noteId));
+            //Update the element from the HTML
+            notes[i].id = `nota-${i+1}`;
+            //Change the Id from the note;
+            noteData.noteId = notes[i].id;
+            //Save the note with a new Id
+            localStorage.setItem(noteData.noteId, JSON.stringify(noteData));
+            //Delete the previous note;
+            localStorage.removeItem(noteId)
         }
     }
 }
 
 //Add notes
-function addNote(){
-    //Calls the function to get the number of current notes on the LocalStorage
-    countNotes();
-    const note = document.createElement('div');
-    note.classList.add('note');
-    const noteId = `nota-${numberNotes+1}`
-    note.id = noteId;
-    note.innerHTML = `
-    <div class="tool">
-        <i class="save fa-solid fa-floppy-disk"></i>
-        <i class="trash fa-solid fa-trash"></i>
-    </div>
-    <textarea></textarea>
-    `
-    main.appendChild(note);
-
-    //Calls the function to in order to match the number of notes
-    saveAndDelete();
+function addNote(){ 
+    const notes = document.querySelectorAll('.note')
+    //To not add more than one note
+    if(localStorage.length == notes.length){
+        //Calls the function to get the number of current notes on the LocalStorage
+        countNotes();
+        const note = document.createElement('div');
+        note.classList.add('note');
+        const noteId = `nota-${numberNotes+1}`
+        note.id = noteId;
+        note.innerHTML = `
+        <div class="tool">
+            <i class="save fa-solid fa-floppy-disk"></i>
+            <i class="trash fa-solid fa-trash"></i>
+        </div>
+        <textarea></textarea>
+        `
+        main.appendChild(note);
+    
+        //Calls the function to in order to match the number of notes
+        saveAndDelete();
+    }
 }
 
 //Save note on LocalStorage
@@ -102,10 +90,30 @@ function saveNote(element){
 
 //Delete note on Local Storage and HTML
 function deleteNote(note){
+    //Detelte from the HTML
     note.remove();
-    //Calls the function to update the number of notes
-    countNotes();
-    renumberNotes();
+    //If localStorage isn't empty
+    if(localStorage.length>0){
+        //Gets the notes on the HTML
+        const notes = document.querySelectorAll('.note');
+        const elementsLS = []
+        
+        //Fills the elementLS array
+        for(i=0;i<localStorage.length;i++){
+            //Saves the element from the localStorage
+            elementsLS.push(localStorage.key(i))
+        }
+        elementsLS.sort((a,b)=>{
+            a = parseInt(a.split('-')[1])
+            b = parseInt(b.split('-')[1])
+            return a-b;
+        })
+        if(note.id == elementsLS[elementsLS.length-1]){
+            localStorage.removeItem(elementsLS[elementsLS.length-1])
+        }else{
+            renumberNotes(notes, elementsLS);
+        }
+    }
 }
 
 //Function that reloads the number of notes by using the save and delete elements.
@@ -150,20 +158,9 @@ function loadNote(noteId){
 function loadNotes(){
     //If localStorage isn't empty
     if(localStorage.length != 0){
-        //Starts an empty array to save the Id number
-        var ArrayId = []
         for(i=0;i<localStorage.length;i++){
-            ArrayId[i] = parseInt(localStorage.key(i).replace('nota-',''))
-            //Ordering array 
-            ArrayId.sort((a,b)=>a-b)
-            //Save the last Id
-            var lastId = ArrayId[i]
-        }
-        for(i=1;i<=lastId;i++){
-            if(ArrayId.includes(i)){
-                let note = 'nota-'+i;
-                loadNote(note)
-            }
+            let nota = `nota-${i+1}`
+            loadNote(nota)
         }
     }else{
         //Otherwise charge one note
@@ -174,16 +171,4 @@ function loadNotes(){
 loadNotes();
 
 //In order to solve the problem of not updating corretly the number of notes on the HTML
-function preCharge(){
-    save = document.querySelectorAll('.save');
-    save.forEach(function(element){
-        element.addEventListener('click', saveAndDelete())
-    })
-    
-    trash = document.querySelectorAll('.trash');
-    trash.forEach(function(element){
-        element.addEventListener('click', saveAndDelete())
-    })
-}
-
-preCharge();
+saveAndDelete();
