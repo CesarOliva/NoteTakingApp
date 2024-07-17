@@ -51,7 +51,7 @@ function addNote(){
         </div>
         <textarea></textarea>
         `
-        main.appendChild(note);
+        main.insertAdjacentElement('afterbegin', note);
     
         //Calls the function to in order to match the number of notes
         saveAndDelete();
@@ -157,11 +157,13 @@ function loadNote(noteId){
 //Loads all notes from the localStorage to put in the HTML
 function loadNotes(){
     //If localStorage isn't empty
-    if(localStorage.length != 0){
-        for(i=0;i<localStorage.length;i++){
-            let nota = `nota-${i+1}`
+    if(localStorage.length>0){
+        for(i=localStorage.length;i>0;i--){
+            let nota = `nota-${i}`
             loadNote(nota)
         }
+        //In order to solve the problem of not updating corretly the number of notes on the HTML
+        saveAndDelete();
     }else{
         //Otherwise charge one note
         addNote()
@@ -169,6 +171,3 @@ function loadNotes(){
 }
 
 loadNotes();
-
-//In order to solve the problem of not updating corretly the number of notes on the HTML
-saveAndDelete();
