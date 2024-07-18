@@ -96,7 +96,7 @@ function deleteNote(note){
     if(localStorage.length>0){
         //Gets the notes on the HTML
         const notes = document.querySelectorAll('.note');
-        const elementsLS = []
+        var elementsLS = []
         
         //Fills the elementLS array
         for(i=0;i<localStorage.length;i++){
@@ -112,6 +112,12 @@ function deleteNote(note){
             localStorage.removeItem(elementsLS[elementsLS.length-1])
         }else{
             renumberNotes(notes, elementsLS);
+        }
+        //Solving the problem to not update the id 
+        elementsLS = []
+        for(i=0;i<notes.length;i++){
+            elementsLS.push(notes[i].id);
+            notes[i].id= `nota-${i+1}`
         }
     }
 }
