@@ -3,6 +3,7 @@ const addBtn = document.getElementById('addBtn');
 const main = document.getElementById('main');
 let save = document.querySelectorAll('.save');
 let trash = document.querySelectorAll('.trash');
+let copy = document.querySelectorAll('.copy')
 //Variable which saves the number of notes saved on the LocalStorage
 var numberNotes = localStorage.length;
 
@@ -46,6 +47,7 @@ function addNote(){
         note.id = noteId;
         note.innerHTML = `
         <div class="tool">
+            <i class="copy fa-regular fa-copy"></i>
             <i class="save fa-solid fa-floppy-disk"></i>
             <i class="trash fa-solid fa-trash"></i>
         </div>
@@ -122,10 +124,27 @@ function deleteNote(note){
     }
 }
 
+//Function that Copy the content of the note
+function copyNote(note){
+    const noteId = note.id;
+    const noteData = JSON.parse(localStorage.getItem(noteId));
+    const text = noteData.inputContent;
+    const copy = async()=>{
+        try {
+            await navigator.clipboard.writeText(text);
+            console.log(text)
+        } catch(err){
+            console.log(err)
+        }
+    }
+    copy()
+}
+
 //Function that reloads the number of notes by using the save and delete elements.
 function saveAndDelete(){
     save = document.querySelectorAll('.save');
     trash = document.querySelectorAll('.trash');
+    copy = document.querySelectorAll('.copy')
 
     //Click on the save element of every note
     save.forEach(function(element){
@@ -144,6 +163,13 @@ function saveAndDelete(){
             var element = trashClicked.parentElement.parentElement;
             //Delete the note
             deleteNote(element);
+        })
+    })
+    copy.forEach(function(element){
+        element.addEventListener('click', function(event){
+            var copyClicked = event.target;
+            var element = copyClicked.parentElement.parentElement;
+            copyNote(element);
         })
     })
 }
