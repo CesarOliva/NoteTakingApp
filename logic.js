@@ -46,13 +46,19 @@ function addNote(){
         const noteId = `nota-${numberNotes+1}`
         note.id = noteId;
         note.innerHTML = `
-        <div class="tool">
-            <i class="copy fa-regular fa-copy"></i>
-            <i class="save fa-solid fa-floppy-disk"></i>
-            <i class="trash fa-solid fa-trash"></i>
-        </div>
-        <textarea></textarea>
-        `
+            <div class="tool">
+                <div class="name">
+                    <textarea></textarea>
+                </div>
+                <div class="icon">
+                    <i class="copy fa-regular fa-copy"></i>
+                    <i class="save fa-solid fa-floppy-disk"></i>
+                    <i class="trash fa-solid fa-trash"></i>
+                </div>
+            </div>
+            <div class="textarea">
+                <textarea></textarea>
+            </div>        `
         main.appendChild(note)
     
         //Calls the function to in order to match the number of notes
@@ -76,14 +82,16 @@ function saveNote(element){
     }
     const note = document.querySelector(`.note#${noteId}`);
     const noteContent = note.innerHTML;
-    const inputContent = document.querySelector(`.note#${noteId} textarea`).value
+    const inputContent = document.querySelector(`.note#${noteId} .textarea textarea`).value;
+    const nameNote = document.querySelector(`.note#${noteId} .name textarea`).value
     //Save when the note it's not empty
     if(inputContent != ''){
         //JSON Object to save on localStorage
         const noteData = {
             noteId: noteId,
             noteContent: noteContent,
-            inputContent: inputContent
+            inputContent: inputContent,
+            nameNote: nameNote
         }
         //Saving note on LocalStorage
         localStorage.setItem(noteId, JSON.stringify(noteData));
@@ -150,7 +158,7 @@ function saveAndDelete(){
     save.forEach(function(element){
         element.addEventListener('click', function(event){
             var saveClicked = event.target;
-            var element = saveClicked.parentElement.parentElement;
+            var element = saveClicked.parentElement.parentElement.parentElement;
             //Save the note and send the element
             saveNote(element)
         })
@@ -160,7 +168,7 @@ function saveAndDelete(){
     trash.forEach(function(element){
         element.addEventListener('click', function(event){
             var trashClicked = event.target;
-            var element = trashClicked.parentElement.parentElement;
+            var element = trashClicked.parentElement.parentElement.parentElement;
             //Delete the note
             deleteNote(element);
         })
@@ -168,7 +176,7 @@ function saveAndDelete(){
     copy.forEach(function(element){
         element.addEventListener('click', function(event){
             var copyClicked = event.target;
-            var element = copyClicked.parentElement.parentElement;
+            var element = copyClicked.parentElement.parentElement.parentElement;
             copyNote(element);
         })
     })
@@ -182,8 +190,10 @@ function loadNote(noteId){
     container.id = noteId
     container.innerHTML = noteData.noteContent;
     main.appendChild(container)
-    const input = document.querySelector(`.note#${noteId} textarea`);
+    const input = document.querySelector(`.note#${noteId} .textarea textarea`);
     input.value = noteData.inputContent;
+    const name = document.querySelector(`.note#${noteId} .name textarea`);
+    name.value = noteData.nameNote;
 }
 
 //Loads all notes from the localStorage to put in the HTML
