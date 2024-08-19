@@ -72,11 +72,9 @@ body{
     color: #fff;
     background: transparent;
 }
-
 .note textarea:focus{
     outline: none;
 }
-
 .note .name textarea{
     height: 25px;
     resize: none;
